@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+#import "ViewController.h"
+#import "HYTabBarControllerConfig.h"
+#import "AppDelegate.h"
 
 @interface AppDelegate ()
 
@@ -16,10 +19,31 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    ViewController *vc = [[ViewController alloc] init];
+    BOOL logIn = [HUserDefault boolForKey:@"LogIn"];
+    if (logIn) {
+        [self initRootVC];
+    }else{
+        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:vc];
+        self.window.rootViewController = navi;
+    }
     return YES;
 }
 
+
+- (void)initRootVC{
+    HYTabBarControllerConfig *viewController = [[HYTabBarControllerConfig alloc] init];
+    AppDelegate *myDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [UIView transitionWithView:myDelegate.window duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+        BOOL oldState=[UIView areAnimationsEnabled];
+        [UIView setAnimationsEnabled:NO];
+        myDelegate.window.rootViewController = viewController.tabBarController;
+        [myDelegate.window makeKeyAndVisible];
+        [UIView setAnimationsEnabled:oldState];
+    } completion:^(BOOL finished) {
+    }];
+
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
